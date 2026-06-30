@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#090713">
+  <title>æ˜Ÿè¾‰å¡”ç½— Â· ç»™æ­¤åˆ»çš„ä½ ä¸€é¢é•œå­</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="atmosphere" aria-hidden="true">
+    <div class="stars"></div><div class="grain"></div>
+    <div class="fog fog-one"></div><div class="fog fog-two"></div>
+    <div class="cathedral arch-left"></div><div class="cathedral arch-right"></div>
+    <div class="ritual-sigil"><i></i><b>âœ¦</b><span>â˜¾</span></div>
+    <div class="candle candle-left"><i></i><b></b></div>
+    <div class="candle candle-right"><i></i><b></b></div>
+  </div>
+  <header class="topbar">
+    <a class="brand" href="#" aria-label="æ˜Ÿè¾‰å¡”ç½—é¦–é¡µ"><span class="brand-mark">â˜¿</span><span><b>æ˜Ÿè¾‰å¡”ç½—</b><small>NOCTURNE ARCANA</small></span></a>
+    <button class="sound-toggle" id="soundToggle" aria-pressed="false" title="åˆ‡æ¢å£°éŸ³">â™«</button>
+  </header>
+
+  <main>
+    <section class="screen active" id="welcomeScreen">
+      <div class="moon-orbit" aria-hidden="true"><div class="moon">â˜¾</div><i></i><i></i><i></i><b>á›‰</b></div>
+      <p class="eyebrow">ENTER THE VEILED CHAMBER</p>
+      <h1>ç©¿è¿‡å¤œå¹•<br><em>è†å¬å‘½è¿ç•™ä¸‹çš„ä½Žè¯­</em></h1>
+      <p class="intro">çƒ›ç«å·²ç‚¹ç‡ƒï¼Œå¤è€çš„ç‰Œé˜µæ­£åœ¨ç­‰å¾…ã€‚å‡è§†ä½ å¿ƒä¸­çš„é—®é¢˜ï¼Œè®©è±¡å¾æ›¿æ²‰é»˜å¼€å£ã€‚</p>
+      <button class="primary" data-next="spreadScreen">æŽ¨å¼€å åœå®¤çš„é—¨ <span>â†’</span></button>
+      <p class="tiny">ä»…ä¾›è‡ªæˆ‘æŽ¢ç´¢ä¸Žå¨±ä¹å‚è€ƒ</p>
+    </section>
+
+    <section class="screen" id="spreadScreen">
+      <div class="section-heading"><p class="eyebrow">CHOOSE THE RITUAL</p><h2>é€‰æ‹©ä»Šæ™šçš„ä»ªå¼</h2><p>æ¯ä¸€ç§ç‰Œé˜µï¼Œéƒ½ä¼šä»Žä¸åŒæ–¹å‘ç…§äº®é˜´å½±ã€‚</p></div>
+      <div class="spread-grid">
+        <button class="spread-card" data-spread="single"><span class="spread-icon">â… </span><strong>ä¸€å¼ æŒ‡å¼•</strong><small>ä¸€ä¸ªé—®é¢˜ Â· ä¸€æŸå…‰</small><b>1 å¼ ç‰Œ</b></button>
+        <button class="spread-card featured" data-spread="timeline"><span class="spread-icon">â…¢</span><strong>æ—¶é—´ä¹‹æµ</strong><small>è¿‡åŽ» Â· çŽ°åœ¨ Â· è¶‹åŠ¿</small><b>3 å¼ ç‰Œ</b></button>
+        <button class="spread-card" data-spread="love"><span class="spread-icon">â™¡</span><strong>å…³ç³»ä¹‹é•œ</strong><small>ä½  Â· å¯¹æ–¹ Â· å…³ç³»</small><b>3 å¼ ç‰Œ</b></button>
+        <button class="spread-card" data-spread="career"><span class="spread-icon">âœ§</span><strong>äº‹ä¸šç½—ç›˜</strong><small>çŽ°çŠ¶ Â· é˜»åŠ› Â· è¡ŒåŠ¨</small><b>3 å¼ ç‰Œ</b></button>
+      </div>
+      <button class="back" data-next="welcomeScreen">â† è¿”å›ž</button>
+    </section>
+
+    <section class="screen" id="questionScreen">
+      <div class="section-heading"><p class="eyebrow">WHISPER YOUR INTENTION</p><h2>å‘çƒ›ç«ä½Žå£°è¯´å‡ºé—®é¢˜</h2><p>è¶Šè¯šå®žã€è¶Šå…·ä½“ï¼Œç‰Œé¢è¶Šèƒ½è§¦åŠçœŸæ­£çš„æš—æµã€‚</p></div>
+      <div class="question-box">
+        <textarea id="question" maxlength="240" placeholder="ä¾‹å¦‚ï¼šæˆ‘è¯¥å¦‚ä½•ç†è§£ç›®å‰è¿™æ®µå…³ç³»ï¼Ÿ"></textarea>
+        <span id="counter">0 / 240</span>
+      </div>
+      <div class="question-hints"><span>é¿å…åªé—®â€œä¼šä¸ä¼šâ€</span><span>èšç„¦ä½ å¯ä»¥å½±å“çš„éƒ¨åˆ†</span><span>ä¸€æ¬¡åªé—®ä¸€ä¸ªä¸»é¢˜</span></div>
+      <button class="primary" id="toShuffle">å¸¦ç€é—®é¢˜åŽ»æ´—ç‰Œ <span>â†’</span></button>
+      <button class="back" data-next="spreadScreen">â† é‡é€‰ç‰Œé˜µ</button>
+    </section>
+
+    <section class="screen" id="shuffleScreen">
+      <div class="section-heading"><p class="eyebrow">AWAKEN THE DECK</p><h2>è®©å¤è€ç‰Œé˜µä»Žæ²‰ç¡ä¸­è‹é†’</h2><p>é—­ä¸ŠåŒçœ¼é»˜å¿µé—®é¢˜ï¼Œç„¶åŽè§¦ç¢°ç‰Œå †ã€‚</p></div>
+      <button class="deck-stack" id="deckStack" aria-label="ç‚¹å‡»æ´—ç‰Œ"><span></span><span></span><span class="card-back"><i>âœ¦</i></span></button>
+      <p class="shuffle-status" id="shuffleStatus">å‡†å¤‡å¥½æ—¶ï¼Œè½»è§¦ç‰Œé¢</p>
+      <div class="breath"><i></i><span>å¸æ°” Â· åœç•™ Â· å‘¼æ°”</span></div>
+    </section>
+
+    <section class="screen" id="drawScreen">
+      <div class="section-heading"><p class="eyebrow">THE CARDS ARE WATCHING</p><h2>è®©ç›´è§‰æ›¿ä½ ä¼¸å‡ºæ‰‹</h2><p id="drawInstruction">ä¸è¦è®¡ç®—ï¼Œé€‰æ‹©æœ€å…ˆå¸å¼•ç›®å…‰çš„ç‰Œã€‚</p></div>
+      <div class="fan" id="fan"></div>
+      <div class="draw-progress"><span id="drawCount">å·²é€‰æ‹© 0 / 3</span><div><i id="drawBar"></i></div></div>
+      <button class="primary hidden" id="revealButton">ç¿»å¼€ç‰Œé¢ <span>âœ¦</span></button>
+    </section>
+
+    <section class="screen" id="revealScreen">
+      <div class="section-heading"><p class="eyebrow">THE VEIL IS THINNING</p><h2>ç‰Œé¢æ­£åœ¨æ˜¾å½¢</h2><p>é€å¼ è§¦ç¢°ï¼Œæ­å¼€è¢«é®è”½çš„è®¯æ¯ã€‚</p></div>
+      <div class="revealed-grid" id="revealedGrid"></div>
+      <button class="primary hidden" id="interpretButton">è†å¬ç‰Œçš„è§£è¯» <span>â†’</span></button>
+    </section>
+
+    <section class="screen" id="waitingScreen">
+      <div class="oracle-loader"><span class="ring one"></span><span class="ring two"></span><span class="ring three"></span><b>âœ¦</b></div>
+      <p class="eyebrow">THE ORACLE DESCENDS</p>
+      <h2>ç¥žè°•æ­£åœ¨ç©¿è¿‡å¤œè‰²</h2>
+      <p id="waitingText">å›žæœ›ä½ çš„é—®é¢˜â€¦â€¦</p>
+      <div class="waiting-dots"><i></i><i></i><i></i></div>
+    </section>
+
+    <section class="screen" id="resultScreen">
+      <div class="result-shell">
+        <p class="eyebrow">THE ORACLE'S TESTIMONY</p>
+        <h2>ç¾Šçš®å·ä¸Šçš„ç¥žè°•</h2>
+        <div class="mini-cards" id="miniCards"></div>
+        <article class="reading" id="reading"></article>
+        <p class="notice" id="notice"></p>
+        <div class="result-actions"><button class="primary" id="againButton">å†é—®ä¸€æ¬¡ <span>â†»</span></button><button class="ghost" id="copyButton">å¤åˆ¶è§£è¯»</button></div>
+      </div>
+    </section>
+  </main>
+  <footer><span>â˜¾</span> æ˜Ÿè¾‰å¡”ç½— Â· ç‰Œé¢ä¸æ˜¯å‘½ä»¤ï¼Œè€Œæ˜¯å¦ä¸€ç§çœ‹è§ <span>â˜½</span></footer>
+  <div class="invite-modal" id="inviteModal" aria-hidden="true">
+    <form class="invite-dialog" id="inviteForm">
+      <span class="invite-rune">â˜¿</span>
+      <p class="eyebrow">THE CIRCLE IS SEALED</p>
+      <h2>è¯·è¾“å…¥å—é‚€è€…å¯†è¯­</h2>
+      <p>è¿™é—´å åœå®¤åªå‘è¢«é‚€è¯·çš„äººå¼€æ”¾ã€‚</p>
+      <input id="inviteInput" type="password" maxlength="64" autocomplete="off" placeholder="è¾“å…¥å…±äº«é‚€è¯·ç ">
+      <p class="invite-error" id="inviteError"></p>
+      <button class="primary" type="submit">è¿›å…¥ä»ªå¼ <span>â†’</span></button>
+    </form>
+  </div>
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
