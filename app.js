@@ -18,6 +18,97 @@ const apiBaseUrl = String(remoteConfig.apiBaseUrl || "").replace(/\/$/, "");
 let inviteCode = sessionStorage.getItem("tarot_invite") || "";
 let inviteResolver = null;
 
+const soundscape = {
+  ctx: null, master: null, ambient: null, wind: null, drone: [], enabled: false, bellTimer: null,
+  ensure() {
+    if (this.ctx) return;
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    if (!AudioCtx) return;
+    this.ctx = new AudioCtx();
+    this.master = this.ctx.createGain();
+    this.master.gain.value = 0.0001;
+    this.master.connect(this.ctx.destination);
+
+    this.ambient = this.ctx.createGain();
+    this.ambient.gain.value = 0.7;
+    this.ambient.connect(this.master);
+    [43, 64.5].forEach((frequency, index) => {
+      const oscillator = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      oscillator.type = index ? "sine" : "triangle";
+      oscillator.frequency.value = frequency;
+      gain.gain.value = index ? 0.018 : 0.026;
+      oscillator.connect(gain).connect(this.ambient);
+      oscillator.start();
+      this.drone.push(oscillator);
+    });
+
+    const buffer = this.ctx.createBuffer(1, this.ctx.sampleRate * 4, this.ctx.sampleRate);
+    const channel = buffer.getChannelData(0);
+    for (let i = 0; i < channel.length; i++) channel[i] = (Math.random() * 2 - 1) * (0.55 + 0.45 * Math.sin(i / 19000));
+    const noise = this.ctx.createBufferSource();
+    const filter = this.ctx.createBiquadFilter();
+    const windGain = this.ctx.createGain();
+    noise.buffer = buffer; noise.loop = true;
+    filter.type = "lowpass"; filter.frequency.value = 420; filter.Q.value = 0.7;
+    windGain.gain.value = 0.018;
+    noise.connect(filter).connect(windGain).connect(this.ambient);
+    noise.start(); this.wind = noise;
+  },
+  async toggle() {
+    this.ensure();
+    if (!this.ctx) return;
+    if (this.ctx.state === "suspended") await this.ctx.resume();
+    this.enabled = !this.enabled;
+    const now = this.ctx.currentTime;
+    this.master.gain.cancelScheduledValues(now);
+    this.master.gain.setValueAtTime(Math.max(this.master.gain.value, 0.0001), now);
+    this.master.gain.exponentialRampToValueAtTime(this.enabled ? 0.32 : 0.0001, now + 0.8);
+    if (this.enabled) {
+      this.bell();
+      this.bellTimer = setInterval(() => this.bell(), 15000);
+    } else {
+      clearInterval(this.bellTimer); this.bellTimer = null;
+    }
+  },
+  tone(frequency = 220, duration = 0.35, gainValue = 0.08, type = "sine", endFrequency = null) {
+    if (!this.enabled || !this.ctx) return;
+    const now = this.ctx.currentTime;
+    const oscillator = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+    oscillator.type = type; oscillator.frequency.setValueAtTime(frequency, now);
+    if (endFrequency) oscillator.frequency.exponentialRampToValueAtTime(endFrequency, now + duration);
+    gain.gain.setValueAtTime(0.0001, now);
+    gain.gain.exponentialRampToValueAtTime(gainValue, now + 0.02);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+    oscillator.connect(gain).connect(this.master);
+    oscillator.start(now); oscillator.stop(now + duration + 0.03);
+  },
+  noise(duration = 0.35, gainValue = 0.04, frequency = 1200) {
+    if (!this.enabled || !this.ctx) return;
+    const now = this.ctx.currentTime;
+    const buffer = this.ctx.createBuffer(1, Math.ceil(this.ctx.sampleRate * duration), this.ctx.sampleRate);
+    const channel = buffer.getChannelData(0);
+    for (let i = 0; i < channel.length; i++) channel[i] = Math.random() * 2 - 1;
+    const source = this.ctx.createBufferSource();
+    const filter = this.ctx.createBiquadFilter();
+    const gain = this.ctx.createGain();
+    source.buffer = buffer; filter.type = "bandpass"; filter.frequency.value = frequency; filter.Q.value = 0.8;
+    gain.gain.setValueAtTime(gainValue, now); gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+    source.connect(filter).connect(gain).connect(this.master); source.start(now);
+  },
+  bell() {
+    if (!this.enabled) return;
+    this.tone(174, 3.8, 0.045, "sine");
+    this.tone(261, 3.2, 0.022, "sine");
+    this.tone(348, 2.7, 0.012, "sine");
+  },
+  click() { this.tone(190, 0.12, 0.045, "triangle", 135); },
+  shuffle() { this.noise(1.1, 0.075, 1450); this.tone(82, 1.2, 0.035, "sine", 58); },
+  select() { this.tone(294, 0.45, 0.065, "sine", 196); },
+  reveal() { this.noise(0.42, 0.055, 900); this.tone(130, 0.9, 0.07, "triangle", 390); }
+};
+
 function apiUrl(path) { return `${apiBaseUrl}${path}`; }
 
 function requestInvite(message = "") {
@@ -65,6 +156,7 @@ $("#deckStack").addEventListener("click", () => {
   const deck = $("#deckStack");
   if (deck.classList.contains("shuffling")) return;
   deck.classList.add("shuffling");
+  soundscape.shuffle();
   $("#shuffleStatus").textContent = "让念头慢慢沉静…… / Let your thoughts settle…";
   setTimeout(() => { $("#shuffleStatus").textContent = "牌阵已经准备好 / The spread is ready"; }, 1150);
   setTimeout(() => { deck.classList.remove("shuffling"); buildFan(); show("drawScreen"); }, 1950);
@@ -94,6 +186,7 @@ function chooseCard(button) {
   const pool = cards.filter((item) => !usedNames.has(item[1]));
   const picked = pool[Math.floor(Math.random() * pool.length)];
   state.selected.push({ number: picked[0], name: picked[1], symbol: picked[2], orientation: Math.random() < .28 ? "reversed" : "upright", position: info.positions[state.selected.length] });
+  soundscape.select();
   button.classList.add("chosen");
   updateDrawProgress();
   if (state.selected.length === info.count) $("#revealButton").classList.remove("hidden");
@@ -115,6 +208,7 @@ function buildReveal() {
     const reveal = wrap.querySelector(".reveal-card");
     reveal.addEventListener("click", () => {
       if (reveal.classList.contains("open")) return;
+      soundscape.reveal();
       reveal.classList.add("open"); state.revealed++;
       if (state.revealed === state.selected.length) setTimeout(() => $("#interpretButton").classList.remove("hidden"), 700);
     });
@@ -163,4 +257,12 @@ function renderReading(data) {
 
 $("#againButton").addEventListener("click", () => { $("#question").value = ""; $("#counter").textContent = "0 / 240"; state.selected = []; show("spreadScreen"); });
 $("#copyButton").addEventListener("click", async () => { await navigator.clipboard.writeText($("#reading").textContent); $("#copyButton").textContent = "已复制 · Copied"; setTimeout(() => $("#copyButton").textContent = "复制解读 · Copy", 1500); });
-$("#soundToggle").addEventListener("click", (event) => { const on = event.currentTarget.getAttribute("aria-pressed") !== "true"; event.currentTarget.setAttribute("aria-pressed", String(on)); event.currentTarget.textContent = on ? "♪" : "♫"; });
+$("#soundToggle").addEventListener("click", async (event) => {
+  await soundscape.toggle();
+  const on = soundscape.enabled;
+  event.currentTarget.setAttribute("aria-pressed", String(on));
+  event.currentTarget.classList.toggle("sound-on", on);
+  event.currentTarget.textContent = on ? "♪" : "♫";
+  event.currentTarget.title = on ? "关闭音乐与音效 / Mute" : "开启音乐与音效 / Sound on";
+});
+$$('button:not(#soundToggle)').forEach((button) => button.addEventListener("click", () => soundscape.click()));
