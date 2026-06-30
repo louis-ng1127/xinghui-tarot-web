@@ -1,14 +1,14 @@
 const cards = [
-  ["0","æ„šè€…","â™¢"],["I","é­”æœ¯å¸ˆ","âœ¦"],["II","å¥³ç¥­å¸","â˜¾"],["III","çš‡åŽ","â€"],["IV","çš‡å¸","â™œ"],["V","æ•™çš‡","â™™"],
-  ["VI","æ‹äºº","â™¡"],["VII","æˆ˜è½¦","â™ž"],["VIII","åŠ›é‡","âˆž"],["IX","éšè€…","âŒ"],["X","å‘½è¿ä¹‹è½®","â˜¸"],["XI","æ­£ä¹‰","âš–"],
-  ["XII","å€’åŠäºº","â™†"],["XIII","æ­»ç¥ž","â™ "],["XIV","èŠ‚åˆ¶","âš—"],["XV","æ¶é­”","â™‘"],["XVI","é«˜å¡”","ÏŸ"],["XVII","æ˜Ÿæ˜Ÿ","â˜†"],
-  ["XVIII","æœˆäº®","â˜½"],["XIX","å¤ªé˜³","â˜€"],["XX","å®¡åˆ¤","â™¬"],["XXI","ä¸–ç•Œ","â—Ž"]
+  ["0","愚者 · The Fool","♢"],["I","魔术师 · The Magician","✦"],["II","女祭司 · The High Priestess","☾"],["III","皇后 · The Empress","❀"],["IV","皇帝 · The Emperor","♜"],["V","教皇 · The Hierophant","♙"],
+  ["VI","恋人 · The Lovers","♡"],["VII","战车 · The Chariot","♞"],["VIII","力量 · Strength","∞"],["IX","隐者 · The Hermit","⌁"],["X","命运之轮 · Wheel of Fortune","☸"],["XI","正义 · Justice","⚖"],
+  ["XII","倒吊人 · The Hanged Man","♆"],["XIII","死神 · Death","♠"],["XIV","节制 · Temperance","⚗"],["XV","恶魔 · The Devil","♑"],["XVI","高塔 · The Tower","ϟ"],["XVII","星星 · The Star","☆"],
+  ["XVIII","月亮 · The Moon","☽"],["XIX","太阳 · The Sun","☀"],["XX","审判 · Judgement","♬"],["XXI","世界 · The World","◎"]
 ];
 const spreadInfo = {
-  single: { count: 1, positions: ["æ ¸å¿ƒæŒ‡å¼•"] },
-  timeline: { count: 3, positions: ["è¿‡åŽ»", "çŽ°åœ¨", "è¶‹åŠ¿"] },
-  love: { count: 3, positions: ["ä½ ", "å¯¹æ–¹", "å…³ç³»"] },
-  career: { count: 3, positions: ["çŽ°çŠ¶", "é˜»åŠ›", "è¡ŒåŠ¨"] }
+  single: { count: 1, positions: ["核心指引 · Core Guidance"] },
+  timeline: { count: 3, positions: ["过去 · Past", "现在 · Present", "趋势 · Direction"] },
+  love: { count: 3, positions: ["你 · You", "对方 · Them", "关系 · Connection"] },
+  career: { count: 3, positions: ["现状 · Present", "阻力 · Obstacle", "行动 · Action"] }
 };
 const state = { spread: "timeline", question: "", selected: [], revealed: 0 };
 const $ = (selector) => document.querySelector(selector);
@@ -32,7 +32,7 @@ function requestInvite(message = "") {
 $("#inviteForm").addEventListener("submit", (event) => {
   event.preventDefault();
   const value = $("#inviteInput").value.trim();
-  if (!value) { $("#inviteError").textContent = "è¯·è¾“å…¥é‚€è¯·ç "; return; }
+  if (!value) { $("#inviteError").textContent = "请输入邀请码 / Please enter the invite code"; return; }
   inviteCode = value;
   sessionStorage.setItem("tarot_invite", value);
   $("#inviteModal").classList.remove("open");
@@ -65,8 +65,8 @@ $("#deckStack").addEventListener("click", () => {
   const deck = $("#deckStack");
   if (deck.classList.contains("shuffling")) return;
   deck.classList.add("shuffling");
-  $("#shuffleStatus").textContent = "è®©å¿µå¤´æ…¢æ…¢æ²‰é™â€¦â€¦";
-  setTimeout(() => { $("#shuffleStatus").textContent = "ç‰Œé˜µå·²ç»å‡†å¤‡å¥½"; }, 1150);
+  $("#shuffleStatus").textContent = "让念头慢慢沉静…… / Let your thoughts settle…";
+  setTimeout(() => { $("#shuffleStatus").textContent = "牌阵已经准备好 / The spread is ready"; }, 1150);
   setTimeout(() => { deck.classList.remove("shuffling"); buildFan(); show("drawScreen"); }, 1950);
 });
 
@@ -101,7 +101,7 @@ function chooseCard(button) {
 
 function updateDrawProgress() {
   const count = spreadInfo[state.spread].count;
-  $("#drawCount").textContent = `å·²é€‰æ‹© ${state.selected.length} / ${count}`;
+  $("#drawCount").textContent = `已选择 · Selected ${state.selected.length} / ${count}`;
   $("#drawBar").style.width = `${state.selected.length / count * 100}%`;
 }
 
@@ -111,7 +111,7 @@ function buildReveal() {
   $("#interpretButton").classList.add("hidden");
   state.selected.forEach((card) => {
     const wrap = document.createElement("div"); wrap.className = "reveal-wrap";
-    wrap.innerHTML = `<div class="reveal-card"><div class="face back"></div><div class="face front"><span class="card-number">${card.number}</span><div class="card-art">${card.symbol}</div><strong class="card-name">${card.name}</strong><span class="orientation">${card.orientation === "reversed" ? "é€†ä½" : "æ­£ä½"}</span></div></div><span class="card-position">${card.position}</span>`;
+    wrap.innerHTML = `<div class="reveal-card"><div class="face back"></div><div class="face front"><span class="card-number">${card.number}</span><div class="card-art">${card.symbol}</div><strong class="card-name">${card.name}</strong><span class="orientation">${card.orientation === "reversed" ? "逆位 · Reversed" : "正位 · Upright"}</span></div></div><span class="card-position">${card.position}</span>`;
     const reveal = wrap.querySelector(".reveal-card");
     reveal.addEventListener("click", () => {
       if (reveal.classList.contains("open")) return;
@@ -126,7 +126,7 @@ $("#interpretButton").addEventListener("click", requestReading);
 async function requestReading() {
   if (remoteConfig.inviteRequired && !inviteCode) await requestInvite();
   show("waitingScreen");
-  const phases = ["å›žæœ›ä½ çš„é—®é¢˜â€¦â€¦", "æ„Ÿå—æ¯å¼ ç‰Œçš„ä½ç½®â€¦â€¦", "è¿žæŽ¥ç‰Œä¸Žç‰Œä¹‹é—´çš„çº¿ç´¢â€¦â€¦", "å°†è±¡å¾æ•´ç†æˆå¯ä»¥å¸¦èµ°çš„è¯â€¦â€¦"];
+  const phases = ["回望你的问题…… / Returning to your question…", "感受每张牌的位置…… / Sensing each card's place…", "连接牌与牌之间的线索…… / Connecting the signs…", "将象征整理成可以带走的话…… / Shaping symbols into guidance…"];
   let phase = 0;
   const timer = setInterval(() => { phase = (phase + 1) % phases.length; $("#waitingText").textContent = phases[phase]; }, 1800);
   try {
@@ -134,33 +134,33 @@ async function requestReading() {
     if (response.status === 401 && remoteConfig.inviteRequired) {
       sessionStorage.removeItem("tarot_invite");
       inviteCode = "";
-      await requestInvite("é‚€è¯·ç ä¸æ­£ç¡®ï¼Œè¯·é‡æ–°è¾“å…¥");
+      await requestInvite("邀请码不正确，请重新输入 / Incorrect code, please try again");
       response = await fetch(apiUrl("/api/reading"), { method: "POST", headers: { "Content-Type": "application/json", "X-Tarot-Invite": inviteCode }, body: JSON.stringify({ spread: state.spread, question: state.question, cards: state.selected }) });
     }
     const data = await response.json();
-    if (!response.ok) throw new Error(data.error || "è§£è¯»è¯·æ±‚å¤±è´¥");
+    if (!response.ok) throw new Error(data.error || "解读请求失败 / Reading request failed");
     renderReading(data);
   } catch (error) {
-    renderReading({ text: `æš‚æ—¶æ— æ³•è¿žæŽ¥è§£è¯»æœåŠ¡ã€‚\n\n${error.message}\n\nè¯·ç¨åŽé‡æ–°å°è¯•ã€‚`, notice: "å½“å‰ä»…ç½‘é¡µå¯ç”¨ï¼Œè§£è¯»åŽç«¯æœªè¿žæŽ¥ã€‚" });
+    renderReading({ text: `暂时无法连接解读服务。 / The reading service is temporarily unavailable.\n\n${error.message}\n\n请稍后重新尝试。 / Please try again later.`, notice: "当前仅网页可用，解读后端未连接。 / The page is online, but the reading service is offline." });
   } finally { clearInterval(timer); }
 }
 
 function formatOffline(data) {
   if (data.text) return data.text;
-  return `${data.summary}\n\n${data.cards.join("\n\n")}\n\nè¡ŒåŠ¨å»ºè®®\n${data.guidance}\n\nç•™ç»™ä½ çš„é—®é¢˜\n${data.reflection}`;
+  return `${data.summary}\n\n${data.cards.join("\n\n")}\n\n行动建议 · Action Guidance\n${data.guidance}\n\n留给你的问题 · A Question for You\n${data.reflection}`;
 }
 function renderReading(data) {
-  $("#miniCards").innerHTML = state.selected.map((card) => `<span>${card.position} Â· ${card.name}${card.orientation === "reversed" ? "é€†" : "æ­£"}</span>`).join("");
+  $("#miniCards").innerHTML = state.selected.map((card) => `<span>${card.position} · ${card.name}${card.orientation === "reversed" ? "逆" : "正"}</span>`).join("");
   const text = formatOffline(data);
   const reading = $("#reading"); reading.textContent = "";
   $("#notice").textContent = data.notice || (data.source === "codex"
-    ? "æœ¬æ¬¡è§£è¯»ç”±ä½ ç”µè„‘ä¸Šçš„æœ¬æœº Codex ç”Ÿæˆï¼Œå¹¶å·²å»ºç«‹ç‹¬ç«‹ Codex Chatã€‚"
-    : "æœ¬æ¬¡ä¸ºæœ¬åœ°è§„åˆ™æ¼”ç¤ºè§£è¯»ï¼Œæœªè°ƒç”¨ Codexã€‚");
+    ? "本次解读由你电脑上的本机 Codex 生成，并已建立独立 Codex Chat。 / Generated by Codex on your computer in a separate Codex Chat."
+    : "本次为本地规则演示解读，未调用 Codex。 / Local demonstration only; Codex was not used.");
   show("resultScreen");
   let index = 0;
   const type = setInterval(() => { reading.textContent += text.slice(index, index + 3); index += 3; if (index >= text.length) clearInterval(type); }, 12);
 }
 
 $("#againButton").addEventListener("click", () => { $("#question").value = ""; $("#counter").textContent = "0 / 240"; state.selected = []; show("spreadScreen"); });
-$("#copyButton").addEventListener("click", async () => { await navigator.clipboard.writeText($("#reading").textContent); $("#copyButton").textContent = "å·²å¤åˆ¶"; setTimeout(() => $("#copyButton").textContent = "å¤åˆ¶è§£è¯»", 1500); });
-$("#soundToggle").addEventListener("click", (event) => { const on = event.currentTarget.getAttribute("aria-pressed") !== "true"; event.currentTarget.setAttribute("aria-pressed", String(on)); event.currentTarget.textContent = on ? "â™ª" : "â™«"; });
+$("#copyButton").addEventListener("click", async () => { await navigator.clipboard.writeText($("#reading").textContent); $("#copyButton").textContent = "已复制 · Copied"; setTimeout(() => $("#copyButton").textContent = "复制解读 · Copy", 1500); });
+$("#soundToggle").addEventListener("click", (event) => { const on = event.currentTarget.getAttribute("aria-pressed") !== "true"; event.currentTarget.setAttribute("aria-pressed", String(on)); event.currentTarget.textContent = on ? "♪" : "♫"; });
